@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WAV Analyzer</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+ <style>
+    .sidebar {
+      height: 100vh;
+      position: fixed;
+      width: 200px; /* Fixed sidebar width */
+    }
+    .content {
+      margin-left: 200px; /* Same as sidebar width */
+    }
+    #sidebar-logo {
+      max-width: 180px; /* Adjust if needed */
+      max-height: 100px; /* Adjust for your logo's aspect ratio */
+    }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: static;
+        height: auto;
+        width: 100%; /* Full width */
+      }
+      .content {
+        margin-left: 0; /* Remove margin */
+      }
+      #sidebar-logo {
+        max-width: 150px;
+        max-height: 80px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="d-flex">
+  <div class="sidebar bg-dark d-flex flex-column align-items-center">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" class="img-fluid my-4" id="sidebar-logo">
+    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+      <a class="nav-link active" id="v-pills-input-tab" data-toggle="pill" href="#v-pills-input" role="tab" aria-controls="v-pills-input" aria-selected="true">Input</a>
+      <a class="nav-link" id="v-pills-score-tab" data-toggle="pill" href="#v-pills-score" role="tab" aria-controls="v-pills-score" aria-selected="false">Score</a>
+    </div>
+  </div>
+
+   <div class="content flex-grow-1">
+    <div class="tab-content" id="v-pills-tabContent">
+      <div class="tab-pane fade show active" id="v-pills-input" role="tabpanel" aria-labelledby="v-pills-input-tab">
+        <!-- Input content goes here -->
+
+
+
+        <!-- Form area -->
+        <form action="/upload" method="post" enctype="multipart/form-data" class="m-4">
+          <div class="form-group">
+            <input type="file" name="file" accept=".wav" class="form-control-file">
+          </div>
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </form>
+      </div>
+{% if message %}
+    <div id="message-box">
+        {% if status == "success" %}
+            <p class="alert alert-success">{{ message }}</p>
+        {% elif status == "error" %}
+            <p class="alert alert-danger">{{ message }}</p>
+        {% else %}
+            <p>{{ message }}</p>
+        {% endif %}
+    </div>
+
+    <script type="text/javascript">
+        // Set a timeout function to remove the message after 5 seconds (5000 milliseconds)
+        setTimeout(function() {
+            var messageBox = document.getElementById('message-box');
+            if (messageBox) {
+                messageBox.style.display = 'none'; // This will hide the message box
+                // messageBox.remove(); // Alternatively, this will remove the element from the DOM entirely
+            }
+        }, 5000); // Time in milliseconds before the message box is hidden
+    </script>
+{% endif %}
+
+
+<div class="tab-pane fade" id="v-pills-score" role="tabpanel" aria-labelledby="v-pills-score-tab">
+  <div class="m-4">
+    <h2>Score Table</h2>
+    <table class="table">
+      <thead class="thead-dark">
+        <tr>
+          <th>File Name</th>
+          <th>Length</th>
+        </tr>
+      </thead>
+ <tbody>
+  {% if files_info %}
+    {% for file_info in files_info %}
+      <tr>
+        <td>{{ file_info['name'] }}</td>
+        <td>{{ file_info['duration'] }}</td>
+      </tr>
+    {% endfor %}
+  {% else %}
+    <!-- If there are no results, show a message -->
+    <tr>
+      <td colspan="2" class="text-center">No files have been uploaded yet</td>
+    </tr>
+  {% endif %}
+</tbody>
+
+    </table>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('form').on('submit', function(event){
+      // Your AJAX call
+    });
+  });
+</script>
+</body>
+</html>
